@@ -21,10 +21,6 @@ Let us know if you have any issues.
 ## Directory Structure
 CMakeLists.txt will help you build your code. We recommend you read into cmake to understand how it works and how to use it to build your services.
 
-The starter code for your master and worker files are in the src/ directory, in the master and worker cc files. 
-
-Happy Coding :)
-
 
 ## Running
 
