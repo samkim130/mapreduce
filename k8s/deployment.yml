@@ -1,0 +1,302 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: ws1
+  name: mr-secrets
+data:
+  azure.storage: RGVmYXVsdEVuZHBvaW50c1Byb3RvY29sPWh0dHBzO0FjY291bnROYW1lPXRlYW0ybWFwcmVkdWNlO0FjY291bnRLZXk9VUs2WGZEeWpJTG9najJiNGQ4YWNBd3Bla05OdG1yOFJEL3hKUTM2Z2JhRWRLNWF6aEdON0dhNUNhWk96SUREOVdrK2x4Y2RTRjhVcytBU3RncG52UHc9PTtFbmRwb2ludFN1ZmZpeD1jb3JlLndpbmRvd3MubmV0
+---
+# MASTER
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ws1
+  name: mr-master
+  labels:
+    app.kubernetes.io/name: mr-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mr-master
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mr-master
+    spec:
+      containers:
+        - name: mr-master
+          image: ${IMAGE}
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '0.1'
+            # limits:
+            #   memory: '512Mi'
+            #   cpu: '1'
+          ports:
+            - containerPort: 50050
+              name: http-rx
+          env:
+            - name: IP
+              value: "0.0.0.0"
+            - name: PORT
+              value: "50050"
+            - name: MODE
+              value: "master"
+            - name: FAIL_PARAM
+              value: "0"
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mr-secrets
+                  key: azure.storage
+            - name: AZURE_STORAGE_CONTAINER
+              value: "mapreduce"
+            - name: INTERMEDIARY_AZURE_STORAGE_CONTAINER
+              value: "intermediary"
+            - name: OUTPUT_AZURE_STORAGE_CONTAINER
+              value: "output"
+            - name: SCRIPT_AZURE_STORAGE_CONTAINER
+              value: "scripts"
+            - name: MIN_SHARD_SIZE
+              value: "131072" # 128KB
+            - name: MAX_SHARD_SIZE
+              value: "10485760" # 1MB # "3200" # 3.2KB for lorem split
+---
+# WORKER
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ws1
+  name: mr-worker
+  labels:
+    app.kubernetes.io/name: mr-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mr-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mr-worker
+    spec:
+      containers:
+        - name: mr-worker
+          image: ${IMAGE}
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '0.1'
+            # limits:
+            #   memory: '1Gi'
+            #   cpu: '0.5'
+          ports:
+            - containerPort: 50051
+              name: http-rx
+          env:
+            - name: IP
+              value: "0.0.0.0"
+            - name: PORT
+              value: "50051"
+            - name: MODE
+              value: "worker"
+            - name: FAIL_PARAM
+              value: "0"
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mr-secrets
+                  key: azure.storage
+            - name: AZURE_STORAGE_CONTAINER
+              value: "mapreduce"
+            - name: INTERMEDIARY_AZURE_STORAGE_CONTAINER
+              value: "intermediary"
+            - name: OUTPUT_AZURE_STORAGE_CONTAINER
+              value: "output"
+            - name: SCRIPT_AZURE_STORAGE_CONTAINER
+              value: "scripts"
+---
+# MASTER FAIL
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ws1
+  name: mr-master-fail
+  labels:
+    app.kubernetes.io/name: mr-master-fail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mr-master-fail
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mr-master-fail
+    spec:
+      containers:
+        - name: mr-master-fail
+          image: ${IMAGE}
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '0.1'
+            # limits:
+            #   memory: '512Mi'
+            #   cpu: '1'
+          ports:
+            - containerPort: 50050
+              name: http-rx
+          env:
+            - name: IP
+              value: "0.0.0.0"
+            - name: PORT
+              value: "50050"
+            - name: MODE
+              value: "master"
+            - name: FAIL_PARAM
+              value: "22"
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mr-secrets
+                  key: azure.storage
+            - name: AZURE_STORAGE_CONTAINER
+              value: "mapreduce"
+            - name: INTERMEDIARY_AZURE_STORAGE_CONTAINER
+              value: "intermediary"
+            - name: OUTPUT_AZURE_STORAGE_CONTAINER
+              value: "output"
+            - name: SCRIPT_AZURE_STORAGE_CONTAINER
+              value: "scripts"
+            - name: MIN_SHARD_SIZE
+              value: "131072" # 128KB
+            - name: MAX_SHARD_SIZE
+              value: "10485760" # 1MB # "3200" # 3.2KB for lorem split
+---
+# WORKER FAIL
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ws1
+  name: mr-worker-fail
+  labels:
+    app.kubernetes.io/name: mr-worker-fail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mr-worker-fail
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mr-worker-fail
+    spec:
+      containers:
+        - name: mr-worker-fail
+          image: ${IMAGE}
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '0.1'
+            # limits:
+            #   memory: '1Gi'
+            #   cpu: '0.5'
+          ports:
+            - containerPort: 50051
+              name: http-rx
+          env:
+            - name: IP
+              value: "0.0.0.0"
+            - name: PORT
+              value: "50051"
+            - name: MODE
+              value: "worker"
+            - name: FAIL_PARAM
+              value: "3"
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mr-secrets
+                  key: azure.storage
+            - name: AZURE_STORAGE_CONTAINER
+              value: "mapreduce"
+            - name: INTERMEDIARY_AZURE_STORAGE_CONTAINER
+              value: "intermediary"
+            - name: OUTPUT_AZURE_STORAGE_CONTAINER
+              value: "output"
+            - name: SCRIPT_AZURE_STORAGE_CONTAINER
+              value: "scripts"
+---
+# PROXY
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ws1
+  name: mr-proxy
+  labels:
+    app.kubernetes.io/name: mr-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mr-proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mr-proxy
+    spec:
+      containers:
+        - name: mr-proxy
+          image: ${IMAGE}
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
+          resources:
+            requests:
+              memory: '100Mi'
+              cpu: '0.1'
+            limits:
+              memory: '512Mi'
+              cpu: '0.5'
+          ports:
+            - containerPort: 50049
+              name: http-rx
+          env:
+            - name: IP
+              value: "0.0.0.0"
+            - name: PORT
+              value: "50049"
+            - name: MODE
+              value: "proxy"
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mr-secrets
+                  key: azure.storage
+            - name: AZURE_STORAGE_CONTAINER
+              value: "mapreduce"
+            - name: INTERMEDIARY_AZURE_STORAGE_CONTAINER
+              value: "intermediary"
+            - name: OUTPUT_AZURE_STORAGE_CONTAINER
+              value: "output"
+            - name: SCRIPT_AZURE_STORAGE_CONTAINER
+              value: "scripts"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mr-proxy
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: mr-proxy
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http-rx
+      protocol: TCP
