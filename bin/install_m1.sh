@@ -37,4 +37,10 @@ sudo cmake .
 sudo make -j${numprocs}
 popd
 
+# python (use 3.7)
+brew install -f pyenv
+pyenv install 3.7
+export PATH="$HOME/.pyenv/versions/3.7.17/bin:$PATH"
+python -m pip install grpcio grpcio-tools grpclib protobuf
+
 # TODO azure

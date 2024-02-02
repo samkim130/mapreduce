@@ -45,6 +45,7 @@ clean:
 clean-all: clean
 	rm -rf ./src/protos/*.cc
 	rm -rf ./src/protos/*.h
+	rm -rf ./src/protos/*.py
 
 install:
 	bash install.sh
