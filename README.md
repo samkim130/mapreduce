@@ -1,8 +1,6 @@
-# Kubernetes Skeleton Project
+# Map Reduce
 
-Based on a MapReduce project (clean up for general use WIP)
-
-Mainly for personal use to quickly set up the project without copying over files repeatedly
+Improvement based on a previous school project.
 
 ## Installation
 Run the install.sh script
@@ -19,8 +17,6 @@ The install script will do the following:
 Let us know if you have any issues.
 
 ## Directory Structure
-CMakeLists.txt will help you build your code. We recommend you read into cmake to understand how it works and how to use it to build your services.
-
 
 ## Running
 
