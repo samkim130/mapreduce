@@ -1,4 +1,4 @@
-# Kubernetes Skeleton git file
+# Kubernetes Skeleton Project
 
 Based on a MapReduce project (clean up for general use WIP)
 
