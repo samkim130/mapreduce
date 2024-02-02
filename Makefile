@@ -1,5 +1,8 @@
 all: cmake-build docker-build
 
+install-m1-mac:
+	. ./bin/install_m1.sh
+
 cmake-build:
 	bash build.sh
 

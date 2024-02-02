@@ -21,31 +21,39 @@ find_package(Casablanca REQUIRED)
 find_package(SSL REQUIRED)
 
 # Path to a file.
-set(AZURE_STORAGE_INCLUDE_DIR /usr/local/include/azure/storage)
-find_library(AZURE_STORAGE_LIBRARY
-        NAMES libazure-storage-blobs.so
-        PATHS /usr/local/lib)
-find_library(AZURE_STORAGE_COMMON_LIBRARY
-        NAMES libazure-storage-common.so
-        PATHS /usr/local/lib)
-find_library(AZURE_CORE_LIBRARY
-        NAMES libazure-core.so
-        PATHS /usr/local/lib)
+# set(AZURE_STORAGE_INCLUDE_DIR /usr/local/include/azure/storage)
+# find_library(AZURE_STORAGE_LIBRARY
+#         NAMES libazure-storage-blobs.so
+#         PATHS /usr/local/lib)
+# find_library(AZURE_STORAGE_COMMON_LIBRARY
+#         NAMES libazure-storage-common.so
+#         PATHS /usr/local/lib)
+# find_library(AZURE_CORE_LIBRARY
+#         NAMES libazure-core.so
+#         PATHS /usr/local/lib)
 # set(AZURE_STORAGE_LIBRARY /usr/local/lib/libazure-storage-blobs.so)
 
-set (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ~/src/cpp-netlib/build)
-find_package (cppnetlib 0.13.0 REQUIRED)
-include_directories ( ${CPPNETLIB_INCLUDE_DIRS} )
-# target_link_libraries ( MyApplication ${CPPNETLIB_LIBRARIES} )
-message(STATUS "Using cppnetlib dir: ${CPPNETLIB_INCLUDE_DIRS}")
+# set (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ~/src/cpp-netlib/build)
+# find_package (cppnetlib 0.13.0 REQUIRED)
+# include_directories ( ${CPPNETLIB_INCLUDE_DIRS} )
+# # target_link_libraries ( MyApplication ${CPPNETLIB_LIBRARIES} )
+# message(STATUS "Using cppnetlib dir: ${CPPNETLIB_INCLUDE_DIRS}")
 
 find_package(RapidJSON REQUIRED)
 
-include_directories(${AZURE_STORAGE_INCLUDE_DIR})
-# include_directories(${AZURE_STORAGE_INCLUDE_DIR}/blobs)
-include_directories(${CHECK_INCLUDE_DIRS})
-include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
-include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
+IF (APPLE)
+        # include_directories(${AZURE_STORAGE_INCLUDE_DIR})
+        # include_directories(${AZURE_STORAGE_INCLUDE_DIR}/blobs)
+        include_directories(/opt/homebrew/include)
+        include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
+        include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
+ELSE (APPLE)
+        # include_directories(${AZURE_STORAGE_INCLUDE_DIR})
+        # include_directories(${AZURE_STORAGE_INCLUDE_DIR}/blobs)
+        include_directories(${CHECK_INCLUDE_DIRS})
+        include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
+        include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
+ENDIF (APPLE)
 
 add_definitions(-std=c++14)
 add_subdirectory(src)
