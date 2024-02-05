@@ -3,9 +3,11 @@
 Improvement based on a previous school project.
 
 ## Installation
-Run the install.sh script
+
+BB King's clubRun the install.sh script
 
 The install script will do the following:
+
 1. Install kubectl
 2. Install protobuf
 3. Install Kind
@@ -14,9 +16,27 @@ The install script will do the following:
 6. Set up conservator
 7. Install etcd/ZooKeeper
 
-Let us know if you have any issues.
+## Milestones
 
-## Directory Structure
+1. set up basic zookeeper functionality to communicate between nodes
+2. set up MapReduce code
+3. set up proxy functionality
+4. set up azure
+5. set up basic test features / perf measure
+
+## Directory Structure (in progress)
+
+`bin`
+
+- executables
+
+`k8s`
+
+- kubernetes files
+
+`src/utils`
+
+- contains utility
 
 ## Running
 
@@ -24,9 +44,8 @@ Let us know if you have any issues.
 1. Compile sources, prepare docker image, load it into kind: `./build.sh`
 2. Start the k8s cluster with master and workers, 2 nodes each: `./cluster.sh up`
 3. get master logs to inspect activity between nodes
-3.1. Find pod named mr-master-xxxx: `kubectl get pods -n ws1`
-3.2. Get lods: `kubectl logs [mr-master-xxx] -n ws1`, add flag `-f` to stream logs
-
+   3.1. Find pod named mr-master-xxxx: `kubectl get pods -n ws1`
+   3.2. Get lods: `kubectl logs [mr-master-xxx] -n ws1`, add flag `-f` to stream logs
 
 ## Sharding and Files
 
@@ -39,6 +58,7 @@ the map phase where we try to complete all MapJobs, along the way we feed the ou
 Once the reduce jobs finish, the results are stored in the outputs container in azure.
 
 # Testing
+
 `curl "10.244.0.9:50049?M=2&R=4&files=lorem.txt&mr_functions=mr_functions.py"`
 
 Alternatively,
@@ -47,9 +67,6 @@ Alternatively,
 
 `curl "http://localhost:8080?M=2&R=4&files=lorem.txt&mr_functions=mr_functions.py"`
 
-
 Newest version
 `python3.7 user_client.py -d folder -m mapper.py -r reducer.py -M 10 -R 3`
 For -d option, don't include the '/' at the end, the script will get all files in that dir and upload it
-
-
